@@ -1,5 +1,6 @@
 package br.com.mirateste.mirateste;
 
+import android.content.Context;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -19,10 +20,12 @@ public class MainActivityPresenter implements MainContract.Presenter {
     private List<Integer> mRandomList;
     private Call<List<Integer>> randomNumResponse;
     private List<RandomNumbers> mHistoryList;
+    private Context mContext;
 
-    public MainActivityPresenter(MainContract.Parent mainParent){
+    public MainActivityPresenter(MainContract.Parent mainParent, Context context){
         mMainParent = mainParent;
         mHistoryList = new ArrayList<>();
+        mContext = context;
     }
 
     @Override
@@ -64,10 +67,11 @@ public class MainActivityPresenter implements MainContract.Presenter {
     public String verifyValue(String number) {
 
         if(mRandomList.isEmpty())
-            return "A lista está vazia";
+            return mContext.getResources().getString(R.string.empty_list);
         else{
             int numInt = Integer.parseInt(number);
             RandomNumbers randomNumbers;
+            String verifyNumber;
             if(mHistoryList==null)
                 mHistoryList = new ArrayList<>();
 
@@ -75,18 +79,31 @@ public class MainActivityPresenter implements MainContract.Presenter {
                 if((i+1) < mRandomList.size()) {
                     for (int j = (i + 1); j < mRandomList.size(); j++) {
                         if(mRandomList.get(i) + mRandomList.get(j) == numInt) {
-                            randomNumbers = new RandomNumbers(numInt,mRandomList,"Existe");
+                            verifyNumber = mContext.getResources().getString(R.string.exist);
+                            randomNumbers = new RandomNumbers(numInt,mRandomList,verifyNumber);
                             mHistoryList.add(randomNumbers);
-                            return "Existe!";
+                            return verifyNumber;
                         }
                     }
                 }
-                    else{
-                    return "Não existe";
-                }
-
             }
+            verifyNumber = mContext.getResources().getString(R.string.not_exist);
+            randomNumbers = new RandomNumbers(numInt,mRandomList,verifyNumber);
+            mHistoryList.add(randomNumbers);
+            return verifyNumber;
         }
-        return "Não existe";
+    }
+
+    @Override
+    public List<RandomNumbers> getVerifiedResults() {
+        return mHistoryList;
+    }
+
+    @Override
+    public void setHistoryListFromBack(List<RandomNumbers> historyList) {
+        if(mHistoryList!=null){
+            mHistoryList = new ArrayList<>();
+            mHistoryList.addAll(historyList);
+        }
     }
 }
