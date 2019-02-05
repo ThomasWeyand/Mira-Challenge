@@ -20,23 +20,6 @@ public class RandomNumbers implements Parcelable {
         this.verifyTxt = verifyTxt;
     }
 
-    protected RandomNumbers(Parcel in) {
-        randomNum = in.readInt();
-        verifyTxt = in.readString();
-    }
-
-    public static final Creator<RandomNumbers> CREATOR = new Creator<RandomNumbers>() {
-        @Override
-        public RandomNumbers createFromParcel(Parcel in) {
-            return new RandomNumbers(in);
-        }
-
-        @Override
-        public RandomNumbers[] newArray(int size) {
-            return new RandomNumbers[size];
-        }
-    };
-
     public int getRandomNum() {
         return randomNum;
     }
@@ -61,6 +44,28 @@ public class RandomNumbers implements Parcelable {
         this.verifyTxt = verifyTxt;
     }
 
+    public static Creator<RandomNumbers> getCREATOR() {
+        return CREATOR;
+    }
+
+    protected RandomNumbers(Parcel in) {
+        randomNum = in.readInt();
+        verifyTxt = in.readString();
+        generateNumbers = in.readArrayList(Integer.class.getClassLoader());
+    }
+
+    public static final Creator<RandomNumbers> CREATOR = new Creator<RandomNumbers>() {
+        @Override
+        public RandomNumbers createFromParcel(Parcel in) {
+            return new RandomNumbers(in);
+        }
+
+        @Override
+        public RandomNumbers[] newArray(int size) {
+            return new RandomNumbers[size];
+        }
+    };
+
     @Override
     public int describeContents() {
         return 0;
@@ -70,5 +75,6 @@ public class RandomNumbers implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(randomNum);
         dest.writeString(verifyTxt);
+        dest.writeList(generateNumbers);
     }
 }

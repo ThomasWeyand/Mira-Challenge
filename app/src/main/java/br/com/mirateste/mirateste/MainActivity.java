@@ -1,5 +1,7 @@
 package br.com.mirateste.mirateste;
 
+import android.content.Intent;
+import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.AppCompatButton;
@@ -30,6 +32,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.Pare
     private RandomNumbersAdapter mNumbersAdapter;
     private MainContract.Presenter presenter;
     private EditText mEdtNumber;
+    protected static final int RESULT_HISTORY = 1;
 
 
     @Override
@@ -38,7 +41,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.Pare
         setContentView(R.layout.activity_main);
         mEdtNumber = findViewById(R.id.edt_number);
 
-        presenter = new MainActivityPresenter(this);
+        presenter = new MainActivityPresenter(this,this);
 
         buildNumberAdapter();
         presenter.buildList();
@@ -77,16 +80,25 @@ public class MainActivity extends AppCompatActivity implements MainContract.Pare
     }
 
     public void verifyClick(View view) {
-        if(mEdtNumber.getText().toString().equals(""))
-            Toast.makeText(this,"Digite um valor para verificar", Toast.LENGTH_SHORT).show();
-        else if(Integer.parseInt(mEdtNumber.getText().toString()) < -197 ||
-                Integer.parseInt(mEdtNumber.getText().toString()) > 197)
+        if(mEdtNumber.getText().toString().equals("")) {
+            Toast.makeText(this, "Digite um valor para verificar", Toast.LENGTH_SHORT).show();
+        } else if(Integer.parseInt(mEdtNumber.getText().toString()) < -197 ||
+                Integer.parseInt(mEdtNumber.getText().toString()) > 197) {
             Toast.makeText(this, "Digite um valor entre -197 e 197", Toast.LENGTH_SHORT).show();
-        else
-            Toast.makeText(this,presenter.verifyValue(mEdtNumber.getText().toString()), Toast.LENGTH_SHORT).show();
+            mEdtNumber.getText().clear();
+        }
+        else {
+            Toast.makeText(this, presenter.verifyValue(mEdtNumber.getText().toString()), Toast.LENGTH_SHORT).show();
+            mEdtNumber.getText().clear();
+        }
     }
 
     public void historyClick(View view) {
+        Intent intent = new Intent(this, HistoryActivity.class);
+        Bundle args = new Bundle();
+        args.putParcelableArrayList(HistoryActivity.HISTORY_LIST, (ArrayList<? extends Parcelable>) presenter.getVerifiedResults());
+        intent.putExtras(args);
+        startActivityForResult(intent, RESULT_HISTORY);
     }
 
     public void redefineClick(View view) {
@@ -94,4 +106,13 @@ public class MainActivity extends AppCompatActivity implements MainContract.Pare
 
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(resultCode == RESULT_HISTORY){
+            if(data.getExtras()!=null){
+                List<RandomNumbers> historyList = data.getExtras().getParcelableArrayList(HistoryActivity.HISTORY_LIST);
+                presenter.setHistoryListFromBack(historyList);
+            }
+        }
+    }
 }
