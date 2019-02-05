@@ -24,7 +24,14 @@
         <activity android:name=".HistoryActivity"
             android:screenOrientation="portrait"
             android:parentActivityName=".MainActivity"
+            android:launchMode="singleTop"
             android:theme="@style/AppTheme.NoActionBar.HistoryScreen"
+            />
+        <activity android:name=".ListResultDialogActivity"
+            android:theme="@style/NoActionBarDialog"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"
+
             />
     </application>
 

@@ -24,7 +24,6 @@ public class MainActivityPresenter implements MainContract.Presenter {
 
     public MainActivityPresenter(MainContract.Parent mainParent, Context context){
         mMainParent = mainParent;
-        mHistoryList = new ArrayList<>();
         mContext = context;
     }
 
@@ -66,7 +65,7 @@ public class MainActivityPresenter implements MainContract.Presenter {
     @Override
     public String verifyValue(String number) {
 
-        if(mRandomList.isEmpty())
+        if(mRandomList!=null && mRandomList.isEmpty())
             return mContext.getResources().getString(R.string.empty_list);
         else{
             int numInt = Integer.parseInt(number);
@@ -101,9 +100,9 @@ public class MainActivityPresenter implements MainContract.Presenter {
 
     @Override
     public void setHistoryListFromBack(List<RandomNumbers> historyList) {
-        if(mHistoryList!=null){
+        /*if(mHistoryList!=null){
             mHistoryList = new ArrayList<>();
             mHistoryList.addAll(historyList);
-        }
+        }*/
     }
 }
