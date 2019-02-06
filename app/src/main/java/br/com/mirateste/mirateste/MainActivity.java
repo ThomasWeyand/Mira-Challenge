@@ -1,14 +1,19 @@
 package br.com.mirateste.mirateste;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -35,12 +40,49 @@ public class MainActivity extends AppCompatActivity implements MainContract.Pare
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mEdtNumber = findViewById(R.id.edt_number);
+        final AppCompatButton verifyBtn = findViewById(R.id.btn_verify);
+
+        mEdtNumber.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    verifyBtn.performClick();
+                    return true;
+                }
+                return false;
+            }
+        });
 
         mHistoryList = new ArrayList<>();
 
         buildNumberAdapter();
         presenter = new MainActivityPresenter(this,this);
 
+        if(savedInstanceState == null || !savedInstanceState.containsKey(HISTORY_STATE)){
+            presenter.buildList();
+        }else{
+            mHistoryList.addAll(savedInstanceState.<RandomNumbers>getParcelableArrayList(HISTORY_STATE));
+            updateAdapter(mHistoryList.get(mHistoryList.size() - 1).getGenerateNumbers());
+            presenter.setIntegerList(mHistoryList.get(mHistoryList.size() - 1).getGenerateNumbers());
+        }
+
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.i(TAG, "Pause");
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.i(TAG, "Stop");
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.i(TAG, "Destroy");
     }
 
     private void buildNumberAdapter() {
@@ -103,23 +145,16 @@ public class MainActivity extends AppCompatActivity implements MainContract.Pare
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
         outState.putParcelableArrayList(HISTORY_STATE,(ArrayList<? extends Parcelable>) mHistoryList);
+        super.onSaveInstanceState(outState);
     }
 
     @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-        if(savedInstanceState!=null){
-            if(savedInstanceState.getParcelableArrayList(HISTORY_STATE) != null &&
-            !savedInstanceState.getParcelableArrayList(HISTORY_STATE).isEmpty()) {
-                mHistoryList.addAll(savedInstanceState.<RandomNumbers>getParcelableArrayList(HISTORY_STATE));
-                updateAdapter(mHistoryList.get(mHistoryList.size() - 1).getGenerateNumbers());
-                presenter.setIntegerList(mHistoryList.get(mHistoryList.size() - 1).getGenerateNumbers());
-            }
-        }else{
-            presenter.buildList();
-        }
+    public void onBackPressed() {
+        super.onBackPressed();
+       /* Bundle bundle = new Bundle();
+        bundle.putParcelableArrayList(HISTORY_STATE, (ArrayList<? extends Parcelable>) mHistoryList);
+        onSaveInstanceState(bundle);*/
     }
 
     @Override

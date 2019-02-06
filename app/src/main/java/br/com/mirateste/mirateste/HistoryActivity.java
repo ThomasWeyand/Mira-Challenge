@@ -63,9 +63,6 @@ public class HistoryActivity extends AppCompatActivity {
         RecyclerView historyRecycler = findViewById(R.id.history_recycle);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false);
         historyRecycler.setLayoutManager(linearLayoutManager);
-        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(this,
-                linearLayoutManager.getOrientation());
-        historyRecycler.addItemDecoration(dividerItemDecoration);
 
         mRandomNumbers = new ArrayList<>();
         mHistoryAdapter = new HistoryAdapter(this,mRandomNumbers);
