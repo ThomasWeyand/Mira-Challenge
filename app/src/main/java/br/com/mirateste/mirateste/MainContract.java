@@ -8,13 +8,14 @@ public class MainContract {
 
     public interface Parent{
         void updateAdapter(List<Integer> numberslist);
+        void updateHistoryList(RandomNumbers randomNumbers);
     }
 
     public interface Presenter{
         void buildList();
         String verifyValue(String number);
-        List<RandomNumbers> getVerifiedResults();
         void setHistoryListFromBack(List<RandomNumbers> historyList);
+        void setIntegerList(List<Integer> randomList);
     }
 
 }

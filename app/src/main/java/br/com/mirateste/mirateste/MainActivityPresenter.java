@@ -19,12 +19,12 @@ public class MainActivityPresenter implements MainContract.Presenter {
     private MainContract.Parent mMainParent;
     private List<Integer> mRandomList;
     private Call<List<Integer>> randomNumResponse;
-    private List<RandomNumbers> mHistoryList;
     private Context mContext;
 
     public MainActivityPresenter(MainContract.Parent mainParent, Context context){
         mMainParent = mainParent;
         mContext = context;
+        mRandomList = new ArrayList<>();
     }
 
     @Override
@@ -51,7 +51,7 @@ public class MainActivityPresenter implements MainContract.Presenter {
 
                 if (response.body() == null) return;
 
-                mRandomList = response.body();
+                mRandomList.addAll(response.body());
                 mMainParent.updateAdapter(mRandomList);
             }
 
@@ -65,37 +65,27 @@ public class MainActivityPresenter implements MainContract.Presenter {
     @Override
     public String verifyValue(String number) {
 
-        if(mRandomList!=null && mRandomList.isEmpty())
+        if(mRandomList==null || mRandomList.isEmpty())
             return mContext.getResources().getString(R.string.empty_list);
         else{
             int numInt = Integer.parseInt(number);
-            RandomNumbers randomNumbers;
             String verifyNumber;
-            if(mHistoryList==null)
-                mHistoryList = new ArrayList<>();
 
             for (int i=0;i<mRandomList.size();i++){
                 if((i+1) < mRandomList.size()) {
                     for (int j = (i + 1); j < mRandomList.size(); j++) {
                         if(mRandomList.get(i) + mRandomList.get(j) == numInt) {
                             verifyNumber = mContext.getResources().getString(R.string.exist);
-                            randomNumbers = new RandomNumbers(numInt,mRandomList,verifyNumber);
-                            mHistoryList.add(randomNumbers);
+                            mMainParent.updateHistoryList(new RandomNumbers(numInt,mRandomList,verifyNumber));
                             return verifyNumber;
                         }
                     }
                 }
             }
             verifyNumber = mContext.getResources().getString(R.string.not_exist);
-            randomNumbers = new RandomNumbers(numInt,mRandomList,verifyNumber);
-            mHistoryList.add(randomNumbers);
+            mMainParent.updateHistoryList(new RandomNumbers(numInt,mRandomList,verifyNumber));
             return verifyNumber;
         }
-    }
-
-    @Override
-    public List<RandomNumbers> getVerifiedResults() {
-        return mHistoryList;
     }
 
     @Override
@@ -104,5 +94,10 @@ public class MainActivityPresenter implements MainContract.Presenter {
             mHistoryList = new ArrayList<>();
             mHistoryList.addAll(historyList);
         }*/
+    }
+
+    @Override
+    public void setIntegerList(List<Integer> randomList) {
+      mRandomList.addAll(randomList);
     }
 }
