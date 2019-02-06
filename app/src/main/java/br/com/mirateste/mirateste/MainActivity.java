@@ -6,9 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -18,11 +16,6 @@ import java.util.List;
 
 import br.com.mirateste.mirateste.adapter.RandomNumbersAdapter;
 import br.com.mirateste.mirateste.model.RandomNumbers;
-import br.com.mirateste.mirateste.network.ApiClient;
-import br.com.mirateste.mirateste.network.ApiInterface;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity implements MainContract.Parent {
 
@@ -33,6 +26,8 @@ public class MainActivity extends AppCompatActivity implements MainContract.Pare
     private MainContract.Presenter presenter;
     private EditText mEdtNumber;
     protected static final int RESULT_HISTORY = 1;
+    protected static final String HISTORY_STATE = "history_state";
+    private List<RandomNumbers> mHistoryList;
 
 
     @Override
@@ -41,16 +36,10 @@ public class MainActivity extends AppCompatActivity implements MainContract.Pare
         setContentView(R.layout.activity_main);
         mEdtNumber = findViewById(R.id.edt_number);
 
-        presenter = new MainActivityPresenter(this,this);
+        mHistoryList = new ArrayList<>();
 
         buildNumberAdapter();
-        presenter.buildList();
-        setUpButtons();
-
-    }
-
-    private void setUpButtons() {
-        AppCompatButton verifyBtn = findViewById(R.id.btn_verify);
+        presenter = new MainActivityPresenter(this,this);
 
     }
 
@@ -74,9 +63,15 @@ public class MainActivity extends AppCompatActivity implements MainContract.Pare
 
     @Override
     public void updateAdapter(List<Integer> numberslist) {
+        if(!mNumbers.isEmpty())
         mNumbers.clear();
         mNumbers.addAll(numberslist);
         mNumbersAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void updateHistoryList(RandomNumbers randomNumbers) {
+        mHistoryList.add(randomNumbers);
     }
 
     public void verifyClick(View view) {
@@ -96,7 +91,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.Pare
     public void historyClick(View view) {
         Intent intent = new Intent(this, HistoryActivity.class);
         Bundle args = new Bundle();
-        args.putParcelableArrayList(HistoryActivity.HISTORY_LIST, (ArrayList<? extends Parcelable>) presenter.getVerifiedResults());
+        args.putParcelableArrayList(HistoryActivity.HISTORY_LIST, (ArrayList<? extends Parcelable>) mHistoryList);
         intent.putExtras(args);
         startActivityForResult(intent, RESULT_HISTORY);
     }
@@ -104,6 +99,27 @@ public class MainActivity extends AppCompatActivity implements MainContract.Pare
     public void redefineClick(View view) {
         presenter.buildList();
 
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelableArrayList(HISTORY_STATE,(ArrayList<? extends Parcelable>) mHistoryList);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        if(savedInstanceState!=null){
+            if(savedInstanceState.getParcelableArrayList(HISTORY_STATE) != null &&
+            !savedInstanceState.getParcelableArrayList(HISTORY_STATE).isEmpty()) {
+                mHistoryList.addAll(savedInstanceState.<RandomNumbers>getParcelableArrayList(HISTORY_STATE));
+                updateAdapter(mHistoryList.get(mHistoryList.size() - 1).getGenerateNumbers());
+                presenter.setIntegerList(mHistoryList.get(mHistoryList.size() - 1).getGenerateNumbers());
+            }
+        }else{
+            presenter.buildList();
+        }
     }
 
     @Override

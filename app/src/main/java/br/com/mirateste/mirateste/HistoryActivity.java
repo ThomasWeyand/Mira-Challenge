@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -58,9 +59,14 @@ public class HistoryActivity extends AppCompatActivity {
     }
 
     private void setUpAdapter() {
+
         RecyclerView historyRecycler = findViewById(R.id.history_recycle);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false);
         historyRecycler.setLayoutManager(linearLayoutManager);
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(this,
+                linearLayoutManager.getOrientation());
+        historyRecycler.addItemDecoration(dividerItemDecoration);
+
         mRandomNumbers = new ArrayList<>();
         mHistoryAdapter = new HistoryAdapter(this,mRandomNumbers);
         historyRecycler.setAdapter(mHistoryAdapter);
