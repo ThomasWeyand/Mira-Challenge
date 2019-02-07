@@ -25,12 +25,21 @@
         app:layout_constraintRight_toRightOf="parent"
         >
 
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:id="@+id/top_divider"
+            android:background="@android:color/black"
+            app:layout_constraintTop_toBottomOf="@id/start_guide"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            />
+
         <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
             android:orientation="horizontal" android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="10dp"
-            android:background="@drawable/history_cell_layer"
-            app:layout_constraintTop_toBottomOf="@id/start_guide"
+            app:layout_constraintTop_toBottomOf="@id/top_divider"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             android:id="@+id/header_container"
@@ -61,11 +70,21 @@
 
         </LinearLayout>
 
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:id="@+id/bottom_divider"
+            android:background="@android:color/black"
+            app:layout_constraintTop_toBottomOf="@id/header_container"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            />
+
     <android.support.v7.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:id="@+id/history_recycle"
-        app:layout_constraintTop_toBottomOf="@id/header_container"
+        app:layout_constraintTop_toBottomOf="@id/bottom_divider"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"

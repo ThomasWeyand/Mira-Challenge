@@ -1,7 +1,6 @@
 package br.com.mirateste.mirateste;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -30,10 +29,9 @@ public class MainActivity extends AppCompatActivity implements MainContract.Pare
     private RandomNumbersAdapter mNumbersAdapter;
     private MainContract.Presenter presenter;
     private EditText mEdtNumber;
-    protected static final int RESULT_HISTORY = 1;
     protected static final String HISTORY_STATE = "history_state";
     private List<RandomNumbers> mHistoryList;
-
+    private Toast mToast;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,7 +44,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.Pare
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
                     verifyBtn.performClick();
-                    return true;
+                    return false;
                 }
                 return false;
             }
@@ -64,25 +62,6 @@ public class MainActivity extends AppCompatActivity implements MainContract.Pare
             updateAdapter(mHistoryList.get(mHistoryList.size() - 1).getGenerateNumbers());
             presenter.setIntegerList(mHistoryList.get(mHistoryList.size() - 1).getGenerateNumbers());
         }
-
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        Log.i(TAG, "Pause");
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        Log.i(TAG, "Stop");
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        Log.i(TAG, "Destroy");
     }
 
     private void buildNumberAdapter() {
@@ -117,17 +96,27 @@ public class MainActivity extends AppCompatActivity implements MainContract.Pare
     }
 
     public void verifyClick(View view) {
+        String toastText;
         if(mEdtNumber.getText().toString().equals("")) {
-            Toast.makeText(this, "Digite um valor para verificar", Toast.LENGTH_SHORT).show();
+            toastText = getResources().getString(R.string.some_value);
         } else if(Integer.parseInt(mEdtNumber.getText().toString()) < -197 ||
                 Integer.parseInt(mEdtNumber.getText().toString()) > 197) {
-            Toast.makeText(this, "Digite um valor entre -197 e 197", Toast.LENGTH_SHORT).show();
+            toastText = getResources().getString(R.string.wrong_interval);
             mEdtNumber.getText().clear();
         }
         else {
-            Toast.makeText(this, presenter.verifyValue(mEdtNumber.getText().toString()), Toast.LENGTH_SHORT).show();
+            toastText = presenter.verifyValue(mEdtNumber.getText().toString());
             mEdtNumber.getText().clear();
         }
+        showToast(toastText);
+    }
+
+    @Override
+    public void showToast(String toastText){
+        if(mToast!=null)
+            mToast.cancel();
+        mToast = Toast.makeText(this, toastText, Toast.LENGTH_SHORT);
+        mToast.show();
     }
 
     public void historyClick(View view) {
@@ -135,7 +124,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.Pare
         Bundle args = new Bundle();
         args.putParcelableArrayList(HistoryActivity.HISTORY_LIST, (ArrayList<? extends Parcelable>) mHistoryList);
         intent.putExtras(args);
-        startActivityForResult(intent, RESULT_HISTORY);
+        startActivity(intent);
     }
 
     public void redefineClick(View view) {
@@ -149,21 +138,4 @@ public class MainActivity extends AppCompatActivity implements MainContract.Pare
         super.onSaveInstanceState(outState);
     }
 
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-       /* Bundle bundle = new Bundle();
-        bundle.putParcelableArrayList(HISTORY_STATE, (ArrayList<? extends Parcelable>) mHistoryList);
-        onSaveInstanceState(bundle);*/
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(resultCode == RESULT_HISTORY){
-            if(data.getExtras()!=null){
-                List<RandomNumbers> historyList = data.getExtras().getParcelableArrayList(HistoryActivity.HISTORY_LIST);
-                presenter.setHistoryListFromBack(historyList);
-            }
-        }
-    }
 }

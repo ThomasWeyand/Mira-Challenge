@@ -1,10 +1,10 @@
 package br.com.mirateste.mirateste;
 
-import android.content.Intent;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -22,7 +22,6 @@ public class HistoryActivity extends AppCompatActivity {
 
     private List<RandomNumbers> mRandomNumbers;
     private HistoryAdapter mHistoryAdapter;
-    private List<RandomNumbers> randomResultsList;
     protected static final String HISTORY_LIST = "history_list";
 
     @Override
@@ -64,6 +63,10 @@ public class HistoryActivity extends AppCompatActivity {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false);
         historyRecycler.setLayoutManager(linearLayoutManager);
 
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
+        Drawable dividerDrawable = ContextCompat.getDrawable(this,R.drawable.divider_shape);
+        dividerItemDecoration.setDrawable(dividerDrawable);
+        historyRecycler.addItemDecoration(dividerItemDecoration);
         mRandomNumbers = new ArrayList<>();
         mHistoryAdapter = new HistoryAdapter(this,mRandomNumbers);
         historyRecycler.setAdapter(mHistoryAdapter);
@@ -73,7 +76,7 @@ public class HistoryActivity extends AppCompatActivity {
     private void getHistoryArgs() {
 
         if(getIntent().getExtras()!=null){
-            randomResultsList = this.getIntent().getExtras().getParcelableArrayList(HISTORY_LIST);
+            List<RandomNumbers> randomResultsList = this.getIntent().getExtras().getParcelableArrayList(HISTORY_LIST);
             if(randomResultsList!=null) {
                 for(int i= (randomResultsList.size()-1);i>=0;i--) {
                     mRandomNumbers.add(randomResultsList.get(i));
@@ -83,13 +86,4 @@ public class HistoryActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    public void onBackPressed() {
-        if(randomResultsList!=null) {
-            Intent intent = new Intent();
-            intent.putParcelableArrayListExtra(HISTORY_LIST,(ArrayList<? extends Parcelable>) randomResultsList);
-            setResult(MainActivity.RESULT_HISTORY, intent);
-        }
-        super.onBackPressed();
-    }
 }

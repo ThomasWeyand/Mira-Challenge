@@ -9,12 +9,12 @@ public class MainContract {
     public interface Parent{
         void updateAdapter(List<Integer> numberslist);
         void updateHistoryList(RandomNumbers randomNumbers);
+        void showToast(String toastText);
     }
 
     public interface Presenter{
         void buildList();
         String verifyValue(String number);
-        void setHistoryListFromBack(List<RandomNumbers> historyList);
         void setIntegerList(List<Integer> randomList);
     }
 

@@ -3,12 +3,12 @@ package br.com.mirateste.mirateste;
 import android.content.Context;
 import android.util.Log;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import br.com.mirateste.mirateste.model.RandomNumbers;
 import br.com.mirateste.mirateste.network.ApiClient;
 import br.com.mirateste.mirateste.network.ApiInterface;
+import br.com.mirateste.mirateste.util.NetworkConnection;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -24,16 +24,19 @@ public class MainActivityPresenter implements MainContract.Presenter {
     public MainActivityPresenter(MainContract.Parent mainParent, Context context){
         mMainParent = mainParent;
         mContext = context;
-        mRandomList = new ArrayList<>();
     }
 
     @Override
     public void buildList() {
 
+        if (!NetworkConnection.isConnected(mContext)) {
+            mMainParent.showToast("Sem conexão com a internet");
+        } else{
             ApiInterface apiService = ApiClient.getClient().create(ApiInterface.class);
             randomNumResponse = apiService.getRandomNumber();
 
-        apiCall();
+            apiCall();
+        }
 
     }
 
@@ -51,7 +54,7 @@ public class MainActivityPresenter implements MainContract.Presenter {
 
                 if (response.body() == null) return;
 
-                mRandomList.addAll(response.body());
+                mRandomList = response.body();
                 mMainParent.updateAdapter(mRandomList);
             }
 
@@ -89,15 +92,7 @@ public class MainActivityPresenter implements MainContract.Presenter {
     }
 
     @Override
-    public void setHistoryListFromBack(List<RandomNumbers> historyList) {
-        /*if(mHistoryList!=null){
-            mHistoryList = new ArrayList<>();
-            mHistoryList.addAll(historyList);
-        }*/
-    }
-
-    @Override
     public void setIntegerList(List<Integer> randomList) {
-      mRandomList.addAll(randomList);
+      mRandomList = randomList;
     }
 }

@@ -3,4 +3,7 @@
     <string name="empty_list">A lista está vazia!</string>
     <string name="exist">Existe</string>    ]
     <string name="not_exist">Não existe</string>
+
+    <string name="some_value">Digite um valor para verificar</string>
+    <string name="wrong_interval">Digite um valor entre -197 e 197</string>
 </resources>
