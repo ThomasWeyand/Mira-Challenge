@@ -2,3 +2,6 @@ Olá, esse é o resultado do teste técnico proposto (https://github.com/miraedu
 É um app nativo desenvolvido em java, referente a oportunidade de desenvolvedor Android.
 Para execução do app o targetSDK mínimo é a api 21.
 Foi divertido de fazê-lo e espero ter atendido as expectativas.
+
+Favor desconsiderar o penúltimo commit que está escrito "Release final", o verdadeiro commit final é realmente o último que está com a mensagem vazia.
+Só não fiz um force push para renomear o último commit porque pessoas que já clonaram o repositório terão que arrumar manualmente o histórico local.
